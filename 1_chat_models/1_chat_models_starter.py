@@ -1,11 +1,18 @@
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+load_dotenv() 
+#loads .env file
 
-load_dotenv()
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2
+)
 
-llm = ChatOpenAI(model="gpt-4")
-
-result = llm.invoke("What is the current time in India?")
+result = llm.invoke("HI there. Who are you?")
 
 print(result)
+
+
+print("Hello World")
 
