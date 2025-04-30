@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
-from langchain.schema.runnable import RunnableBranch, RunnableLambda
+from langchain_core.runnables import RunnableBranch, RunnableLambda
 import re
 
 # Load environment variables from .env

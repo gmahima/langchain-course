@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq, GroqEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough
 
 load_dotenv()
 

@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
-from langchain.schema.output_parser import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser
 from langchain import hub
 from langchain.agents import create_react_agent, AgentExecutor
 import datetime
