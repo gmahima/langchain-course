@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
@@ -17,7 +17,11 @@ def get_system_time(format: str = "%Y-%m-%d %H:%M:%S"):
     formatted_time = current_time.strftime(format)
     return formatted_time
 
-llm = ChatOpenAI(model="gpt-4")
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2
+)
 
 query = "What is the current time in London? (You are in India). Just show the current time and not the date"
 

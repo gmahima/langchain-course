@@ -1,17 +1,27 @@
 import os
-
 from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_groq import ChatGroq, GroqEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Create a ChatGroq model
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2
+)
 
 # Define the persistent directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 db_dir = os.path.join(current_dir, "db")
 persistent_directory = os.path.join(db_dir, "chroma_db_with_metadata")
 
-# Define the embedding model
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+# Load the stored vector database
+embeddings = GroqEmbeddings()
 
 # Load the existing vector store with the embedding function
 db = Chroma(persist_directory=persistent_directory,

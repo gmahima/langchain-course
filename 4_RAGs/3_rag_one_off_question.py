@@ -2,8 +2,12 @@ import os
 
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
+from langchain_groq import ChatGroq, GroqEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough 
+from langchain.schema.document import Document
 
 # Load environment variables from .env
 load_dotenv()
@@ -13,8 +17,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 persistent_directory = os.path.join(
     current_dir, "db", "chroma_db_with_metadata")
 
-# Define the embedding model
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+# Create a ChatGroq model
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2
+)
+
+# Load the stored vector database
+embeddings = GroqEmbeddings()
 
 # Load the existing vector store with the embedding function
 db = Chroma(persist_directory=persistent_directory,
@@ -44,9 +55,6 @@ combined_input = (
     + "\n\nPlease provide a rough answer based only on the provided documents. If the answer is not found in the documents, respond with 'I'm not sure'."
 )
 
-# Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
-
 # Define the messages for the model
 messages = [
     SystemMessage(content="You are a helpful assistant."),
@@ -54,7 +62,7 @@ messages = [
 ]
 
 # Invoke the model with the combined input
-result = model.invoke(messages)
+result = llm.invoke(messages)
 
 # Display the full result and content only
 print("\n--- Generated Response ---")
