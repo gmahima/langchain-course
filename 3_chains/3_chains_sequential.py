@@ -18,10 +18,10 @@ model = ChatGroq(
 # Define prompt templates
 animal_facts_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You like telling facts and you tell facts about {animal}."),
+        ("system", "You like telling facts and you tell facts about {animal} in 1 brief sentence."),
         ("human", "Tell me {count} facts."),
     ]
-)
+) 
 
 # Define a prompt template for translation to French
 translation_template = ChatPromptTemplate.from_messages(
@@ -33,14 +33,14 @@ translation_template = ChatPromptTemplate.from_messages(
 
 # Define additional processing steps using RunnableLambda
 count_words = RunnableLambda(lambda x: f"Word count: {len(x.split())}\n{x}")
-prepare_for_translation = RunnableLambda(lambda output: {"text": output, "language": "french"})
+prepare_for_translation = RunnableLambda(lambda output: {"text": output, "language": "telugu"})
 
 
 # Create the combined chain using LangChain Expression Language (LCEL)
 chain = animal_facts_template | model | StrOutputParser() | prepare_for_translation | translation_template | model | StrOutputParser() 
 
 # Run the chain
-result = chain.invoke({"animal": "cat", "count": 2})
+result = chain.invoke({"animal": "cat", "count": 1})
 
 # Output
 print(result)
