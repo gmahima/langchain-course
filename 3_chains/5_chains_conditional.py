@@ -61,19 +61,29 @@ classification_template = ChatPromptTemplate.from_messages(
     ]
 )
 
+# Create the classification chain
+classification_chain = classification_template | model | StrOutputParser()
+
+# Function to preserve the input
+def classify_and_preserve_input(inputs):
+    # Get classification
+    classification = classification_chain.invoke(inputs)
+    # Return both classification and original input
+    return {"classification": classification, "feedback": inputs["feedback"]}
+
 # Define the runnable branches for handling feedback
 branches = RunnableBranch(
     (
-        lambda x: "positive" in x,
-        positive_feedback_template | model | StrOutputParser()  # Positive feedback chain
+        lambda x: "positive" in x["classification"],
+        positive_feedback_template | model | StrOutputParser()
     ),
     (
-        lambda x: "negative" in x,
-        negative_feedback_template | model | StrOutputParser()  # Negative feedback chain
+        lambda x: "negative" in x["classification"],
+        negative_feedback_template | model | StrOutputParser()
     ),
     (
-        lambda x: "neutral" in x,
-        neutral_feedback_template | model | StrOutputParser()  # Neutral feedback chain
+        lambda x: "neutral" in x["classification"],
+        neutral_feedback_template | model | StrOutputParser()
     ),
     escalate_feedback_template | model | StrOutputParser()
 )
@@ -82,7 +92,7 @@ branches = RunnableBranch(
 classification_chain = classification_template | model | StrOutputParser()
 
 # Combine classification and response generation into one chain
-chain = classification_chain | branches
+chain = RunnableLambda(classify_and_preserve_input) | branches
 
 # Run the chain with an example review
 # Good review - "The product is excellent. I really enjoyed using it and found it very helpful."
@@ -90,7 +100,7 @@ chain = classification_chain | branches
 # Neutral review - "The product is okay. It works as expected but nothing exceptional."
 # Default - "I'm not sure about the product yet. Can you tell me more about its features and benefits?"
 
-review = "The product is terrible. It broke after just one use and the quality is very poor."
+review = "The product is excellent. I really enjoyed using it and found it very helpful. I especially like the translation to Telugu feature"
 result = chain.invoke({"feedback": review})
 
 # Output the result
