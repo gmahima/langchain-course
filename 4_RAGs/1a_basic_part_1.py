@@ -1,8 +1,12 @@
 import os
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
-from langchain_chroma import Chroma
-from langchain_groq import GroqEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import JinaEmbeddings
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Define the directory containing the text file and the persistent directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,7 +38,10 @@ if not os.path.exists(persistent_directory):
 
     # Create embeddings
     print("\n--- Creating embeddings ---")
-    embeddings = GroqEmbeddings()
+    embeddings = JinaEmbeddings(
+        jina_api_key=os.getenv("JINA_KEY"),
+        model_name="jina-embeddings-v3"
+    )
     print("\n--- Finished creating embeddings ---")
 
     # Create the vector store and persist it automatically
